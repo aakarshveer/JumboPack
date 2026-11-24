@@ -10,7 +10,13 @@ import json
 import os
 import sys
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed yet; run setup.py first
 
 try:
     import google.generativeai as genai

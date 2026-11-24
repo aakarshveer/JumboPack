@@ -15,6 +15,7 @@ REQUIRED_PACKAGES = [
     "google-auth-httplib2",
     "google-auth-oauthlib",
     "requests",
+    "python-dotenv",
 ]
 
 ENV_FILE = Path(".env")
@@ -54,6 +55,9 @@ INSTAGRAM_ACCOUNT_ID=
 
 
 def setup_gitignore():
+    if GITIGNORE.exists():
+        print(".gitignore already exists — skipping to preserve your entries.\n")
+        return
     gitignore_content = """.env
 credentials/
 *.pickle

@@ -98,9 +98,6 @@ def review_ideas():
         else:
             still_pending.append(idea)
 
-    # Update pending file - keep skipped + remaining
-    remaining_pending = still_pending + [i for i in ideas if i.get("status") not in ("pending",) or i in still_pending]
-    # Actually rebuild cleanly:
     all_ideas = [i for i in ideas if i.get("status") != "pending"]
     all_ideas.extend(still_pending)
     save_json(PENDING_IDEAS, all_ideas)

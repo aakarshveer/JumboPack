@@ -11,6 +11,12 @@ from datetime import datetime
 from pathlib import Path
 
 try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed yet; run setup.py first
+
+try:
     import google.generativeai as genai
 except ImportError:
     print("Run: pip install google-generativeai")
@@ -83,8 +89,8 @@ Return ONLY a JSON array, no markdown, no explanation."""
     ideas = json.loads(text)
 
     # Add metadata
-    for idea in ideas:
-        idea["id"] = f"{pillar}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{ideas.index(idea)}"
+    for idx, idea in enumerate(ideas):
+        idea["id"] = f"{pillar}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{idx}"
         idea["status"] = "pending"
         idea["created_at"] = datetime.now().isoformat()
 

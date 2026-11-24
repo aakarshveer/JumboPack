@@ -13,9 +13,14 @@ Setup:
 import json
 import os
 import sys
-import time
 from pathlib import Path
 from datetime import datetime
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed yet; run setup.py first
 
 QUEUE_DIR = Path("queue")
 APPROVED_VIDEOS = QUEUE_DIR / "approved_videos.json"
@@ -104,7 +109,7 @@ def upload_to_youtube(video: dict) -> str | None:
         }
     }
 
-    media = MediaFileUpload(file_path, chunksize=-1, resumable=True)
+    media = MediaFileUpload(file_path, chunksize=5 * 1024 * 1024, resumable=True)
     request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
 
     print(f"  Uploading to YouTube: {video['title']}")
@@ -125,33 +130,22 @@ def upload_to_youtube(video: dict) -> str | None:
 # ─────────────────────────────────────────────
 
 def upload_reel_to_instagram(clip_path: str, caption: str) -> bool:
-    """Upload a Reel to Instagram using Graph API."""
-    try:
-        import requests
-    except ImportError:
-        print("Run: pip install requests")
-        return False
+    """
+    PHASE 2 PLACEHOLDER — Instagram Reel upload is not yet implemented.
 
-    if not INSTAGRAM_ACCESS_TOKEN or not INSTAGRAM_ACCOUNT_ID:
-        print("  ERROR: Set INSTAGRAM_ACCESS_TOKEN and INSTAGRAM_ACCOUNT_ID env vars")
-        print("  Guide: https://developers.facebook.com/docs/instagram-api/reference/ig-user/media")
-        return False
+    Phase 1 is YouTube-first. Instagram Graph API publishing will be wired up
+    in Phase 2 once YouTube uploads are confirmed working.
 
-    # Step 1: Create container
-    container_url = f"https://graph.facebook.com/v18.0/{INSTAGRAM_ACCOUNT_ID}/media"
-    container_data = {
-        "media_type": "REELS",
-        "video_url": clip_path,  # Must be a public URL - see note below
-        "caption": caption,
-        "access_token": INSTAGRAM_ACCESS_TOKEN,
-    }
-
-    # NOTE: Instagram requires a public URL for video uploads.
-    # For now this is a placeholder - in production you'd need to host the clip
-    # temporarily (e.g., upload to your server or use a presigned S3 URL).
-    print("  NOTE: Instagram upload requires public video URL.")
-    print("  Upload clip to your server/cloud storage first, then use that URL.")
-    print(f"  Clip ready at: {clip_path}")
+    What will be needed in Phase 2:
+      - Meta Business account + Instagram Professional account
+      - Instagram Graph API app (Meta for Developers)
+      - INSTAGRAM_ACCESS_TOKEN and INSTAGRAM_ACCOUNT_ID in .env
+      - A publicly accessible URL for the clip (e.g. presigned S3 / CDN)
+      - Two API calls: POST /media (create container) + POST /media_publish
+    """
+    print("  [Phase 2] Instagram Reel upload not yet implemented.")
+    print(f"  Clip is ready locally at: {clip_path}")
+    print("  Upload manually via the Instagram app, or wait for Phase 2.")
     return False
 
 

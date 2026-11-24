@@ -5,6 +5,13 @@ Run this to manage your entire content pipeline.
 
 import sys
 import os
+import subprocess
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed yet; run setup.py first
 
 
 MENU = """
@@ -30,14 +37,21 @@ MENU = """
 """
 
 COMMANDS = {
-    "1": "python content_brain.py",
-    "2": "python approval_cli.py ideas",
-    "3": "python video_pipeline.py scripts",
-    "5": "python approval_cli.py videos",
-    "6": "python uploader.py upload",
-    "8": "python approval_cli.py status",
-    "9": "python reporter.py",
+    "1": ["python", "content_brain.py"],
+    "2": ["python", "approval_cli.py", "ideas"],
+    "3": ["python", "video_pipeline.py", "scripts"],
+    "5": ["python", "approval_cli.py", "videos"],
+    "6": ["python", "uploader.py", "upload"],
+    "8": ["python", "approval_cli.py", "status"],
+    "9": ["python", "reporter.py"],
 }
+
+
+def run(cmd: list):
+    """Run a subprocess command and wait for it to finish."""
+    result = subprocess.run(cmd)
+    if result.returncode != 0:
+        print(f"\n[!] Command exited with code {result.returncode}")
 
 
 def main():
@@ -50,13 +64,15 @@ def main():
             break
         elif choice == "4":
             print("\n[YOU] Record your video using the script in /videos/")
-            print("Then run option 7 to link the file: python video_pipeline.py link <id> <file>")
+            print("To link your recorded file, run:")
+            print("  python video_pipeline.py list          (see video IDs)")
+            print("  python video_pipeline.py link <id> <file.mp4>")
             input("\nPress Enter to continue...")
         elif choice == "7":
             file_path = input("Enter video file path: ").strip().strip('"')
-            os.system(f'python video_pipeline.py clip "{file_path}"')
+            run(["python", "video_pipeline.py", "clip", file_path])
         elif choice in COMMANDS:
-            os.system(COMMANDS[choice])
+            run(COMMANDS[choice])
             input("\nPress Enter to continue...")
         else:
             print("Invalid choice.")

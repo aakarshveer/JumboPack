@@ -15,6 +15,12 @@ from pathlib import Path
 from datetime import datetime
 
 try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed yet; run setup.py first
+
+try:
     import google.generativeai as genai
 except ImportError:
     print("Run: pip install google-generativeai")
@@ -88,7 +94,6 @@ Return ONLY valid JSON."""
 def save_script(idea: dict, script: dict):
     """Save script as a readable text file."""
     VIDEOS_DIR.mkdir(exist_ok=True)
-    safe_title = "".join(c if c.isalnum() or c in " _-" else "_" for c in idea["title"])[:50]
     script_path = VIDEOS_DIR / f"{idea['id']}_script.txt"
 
     lines = [
