@@ -1,0 +1,12 @@
+.env
+credentials/*.json
+credentials/*.pickle
+__pycache__/
+*.pyc
+queue/rejected/
+videos/*.mp4
+clips/
+reports/
+*.egg-info/
+.DS_Store
+Thumbs.db
