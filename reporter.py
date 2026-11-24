@@ -12,6 +12,10 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
+# Windows PowerShell defaults to cp1252; force UTF-8 so Gemini output prints cleanly
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -19,9 +23,9 @@ except ImportError:
     pass  # python-dotenv not installed yet; run setup.py first
 
 try:
-    import google.generativeai as genai
+    from google import genai
 except ImportError:
-    print("Run: pip install google-generativeai")
+    print("Run: pip install google-genai")
     sys.exit(1)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
@@ -124,8 +128,7 @@ def generate_gemini_report(data: dict) -> str:
         print("ERROR: Set GEMINI_API_KEY")
         sys.exit(1)
 
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
     prompt = f"""You are the content strategist for Aakar, a young YouTube creator from Bihar, India.
 
@@ -142,7 +145,7 @@ Write a concise weekly report (in English) with these sections:
 
 Keep it actionable, specific, and encouraging. Max 400 words."""
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(model="gemini-3.5-flash", contents=prompt)
     return response.text
 
 
@@ -178,7 +181,7 @@ def main():
     report_text = generate_gemini_report(data)
 
     report_path = save_report(report_text, data)
-    print(f"\n✓ Report saved: {report_path}")
+    print(f"\n[OK] Report saved: {report_path}")
     print("\n" + "="*50)
     print(report_text)
     print("="*50)

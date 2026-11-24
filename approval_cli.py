@@ -85,13 +85,13 @@ def review_ideas():
             idea["status"] = "approved"
             idea["approved_at"] = datetime.now().isoformat()
             approved.append(idea)
-            print("✓ Approved!")
+            print("[OK] Approved!")
         elif choice == "r":
             reason = input("Reason (optional): ").strip()
             idea["status"] = "rejected"
             idea["rejected_reason"] = reason
             rejected_log.append(idea)
-            print("✗ Rejected.")
+            print("[--] Rejected.")
         elif choice == "q":
             still_pending.append(idea)
             break
@@ -140,11 +140,11 @@ def review_videos():
             video["status"] = "approved"
             video["approved_at"] = datetime.now().isoformat()
             approved.append(video)
-            print("✓ Approved for upload!")
+            print("[OK] Approved for upload!")
         elif choice == "r":
             video["status"] = "rejected"
             still_pending.append(video)
-            print("✗ Rejected.")
+            print("[--] Rejected.")
         elif choice == "q":
             still_pending.append(video)
             break

@@ -21,9 +21,9 @@ except ImportError:
     pass  # python-dotenv not installed yet; run setup.py first
 
 try:
-    import google.generativeai as genai
+    from google import genai
 except ImportError:
-    print("Run: pip install google-generativeai")
+    print("Run: pip install google-genai")
     sys.exit(1)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
@@ -52,8 +52,7 @@ def generate_script(idea: dict) -> dict:
         print("ERROR: Set GEMINI_API_KEY")
         sys.exit(1)
 
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
     prompt = f"""You are writing a YouTube script for Aakar, a young Indian creator from Bihar.
 
@@ -81,7 +80,7 @@ Write a complete, engaging video script. Format as JSON:
 Style: conversational Hindi-English mix (Hinglish). Energetic. Personal. Real.
 Return ONLY valid JSON."""
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(model="gemini-3.5-flash", contents=prompt)
     text = response.text.strip()
     if text.startswith("```"):
         text = text.split("```")[1]
@@ -192,9 +191,9 @@ def create_instagram_clips(video_path: str, idea: dict) -> list[str]:
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0:
             clip_paths.append(str(out_path))
-            print(f"  ✓ {out_path}")
+            print(f"  [OK] {out_path}")
         else:
-            print(f"  ✗ FFmpeg error: {result.stderr[-200:]}")
+            print(f"  [FAIL] FFmpeg error: {result.stderr[-200:]}")
 
     return clip_paths
 
@@ -235,7 +234,7 @@ def process_approved_ideas():
             }
             pending_videos.append(video_entry)
             new_scripts += 1
-            print(f"  ✓ Script saved: {script_path}")
+            print(f"  [OK] Script saved: {script_path}")
 
         except Exception as e:
             print(f"  ERROR: {e}")
@@ -253,7 +252,7 @@ def add_video_file(video_id: str, file_path: str):
         if v["id"] == video_id:
             v["file_path"] = file_path
             v["status"] = "pending"
-            print(f"✓ Linked {file_path} to {v['title']}")
+            print(f"[OK] Linked {file_path} to {v['title']}")
             save_json(PENDING_VIDEOS, pending)
             return
     print(f"Video ID not found: {video_id}")

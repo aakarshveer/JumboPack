@@ -17,9 +17,9 @@ except ImportError:
     pass  # python-dotenv not installed yet; run setup.py first
 
 try:
-    import google.generativeai as genai
+    from google import genai
 except ImportError:
-    print("Run: pip install google-generativeai")
+    print("Run: pip install google-genai")
     sys.exit(1)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
@@ -59,8 +59,7 @@ def generate_ideas(pillar: str, count: int = 5) -> list[dict]:
         print("ERROR: Set GEMINI_API_KEY environment variable")
         sys.exit(1)
 
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-1.5-flash")  # Free tier
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
     prompt = f"""You are a YouTube content strategist for a young Indian creator named Aakar.
 
@@ -77,7 +76,7 @@ Generate {count} specific, compelling video ideas. For each idea return a JSON o
 
 Return ONLY a JSON array, no markdown, no explanation."""
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(model="gemini-3.5-flash", contents=prompt)
     text = response.text.strip()
 
     # Clean up if Gemini wraps in markdown

@@ -121,7 +121,7 @@ def upload_to_youtube(video: dict) -> str | None:
 
     video_id = response["id"]
     url = f"https://www.youtube.com/watch?v={video_id}"
-    print(f"  ✓ Uploaded (private): {url}")
+    print(f"  [OK] Uploaded (private): {url}")
     return url
 
 

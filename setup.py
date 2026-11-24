@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 REQUIRED_PACKAGES = [
-    "google-generativeai",
+    "google-genai",             # New official Gemini SDK (replaces google-generativeai)
     "google-api-python-client",
     "google-auth-httplib2",
     "google-auth-oauthlib",
