@@ -16,6 +16,9 @@ REQUIRED_PACKAGES = [
     "google-auth-oauthlib",
     "requests",
     "python-dotenv",
+    "edge-tts",                 # Free Microsoft TTS for voiceover
+    "Pillow",                   # Scene card image generation
+    "feedparser",               # RSS feed parsing (optional, used by trend_scout)
 ]
 
 ENV_FILE = Path(".env")

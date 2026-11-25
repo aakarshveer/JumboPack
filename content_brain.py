@@ -96,13 +96,38 @@ Return ONLY a JSON array, no markdown, no explanation."""
     return ideas
 
 
+def generate_trending_ideas() -> list[dict]:
+    """Fetch daily trends and return Gemini-synthesized ideas."""
+    from trend_scout import get_trending_ideas
+    return get_trending_ideas()
+
+
 def main():
     print("\n=== JumboPack Content Brain ===\n")
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--trending":
+        print("Mode: Daily Trending Topics\n")
+        try:
+            ideas = generate_trending_ideas()
+        except Exception as e:
+            print(f"[FAIL] Trend fetch failed: {e}")
+            sys.exit(1)
+
+        all_ideas = load_pending()
+        # Deduplicate by ID
+        existing_ids = {i["id"] for i in all_ideas}
+        new_ideas = [i for i in ideas if i["id"] not in existing_ids]
+        all_ideas.extend(new_ideas)
+        save_pending(all_ideas)
+        print(f"\n{len(new_ideas)} trending ideas saved to queue/pending_ideas.json")
+        print("Run: python approval_cli.py  to approve ideas")
+        return
 
     if len(sys.argv) > 1:
         pillar = sys.argv[1]
         if pillar not in CONTENT_PILLARS:
             print(f"Valid pillars: {', '.join(CONTENT_PILLARS)}")
+            print("Or use: python content_brain.py --trending")
             sys.exit(1)
         pillars_to_run = [pillar]
     else:
